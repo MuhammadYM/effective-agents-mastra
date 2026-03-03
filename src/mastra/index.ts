@@ -6,9 +6,11 @@ import { Observability, DefaultExporter, CloudExporter, SensitiveDataFilter } fr
 import { weatherWorkflow } from './workflows/weather-workflow';
 import { weatherAgent } from './agents/weather-agent';
 import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
+import {promptChainingWorkflow} from './workflows/prompt-chaining';
+import {parallelizationWorkflow} from './workflows/parallelization';
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow },
+  workflows: { weatherWorkflow, promptChainingWorkflow, parallelizationWorkflow },
   agents: { weatherAgent },
   scorers: { toolCallAppropriatenessScorer, completenessScorer, translationScorer },
   storage: new LibSQLStore({

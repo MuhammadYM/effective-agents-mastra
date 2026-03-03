@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 // Step 1: generate short description of the topic
 const step1 = createStep({
-    id: 'step1',
+    id: 'create short description',
     inputSchema:z.object({
         topic: z.string().describe('The topic to generate a short description for'),
     }),
@@ -16,29 +16,30 @@ const step1 = createStep({
 
         //make necessary llm calls for generating the description
 
-        return {description: null}
+
+        return {description: "null"}
     }
 })
 
 const step2 = createStep({
-    id: 'step2',
+    id: 'update description',
     inputSchema: z.object({
         description: z.string().describe('A short description of the topic'),
     }),
     outputSchema: z.object({
-        updatedDescriptio:z.string().describe('An updated description of the topic'),
+        updatedDescription:z.string().describe('An updated description of the topic'),
     }),
     execute: async ({inputData}) => {
         const {description} = inputData
 
         //make necessary llm calls for updating the description
 
-        return {updatedDescription: null}
+        return {updatedDescription: "null"}
     }
 })
 
 const step3 = createStep({
-    id: 'step3',
+    id: 'generate X thread from description',
     inputSchema:z.object({
         updatedDescription:z.string().describe('An updated description of the topic'),
     }),
@@ -50,7 +51,7 @@ const step3 = createStep({
 
         //make necessary llm calls for generating the X thread
 
-        return {xThread: null}
+        return {xThread: "null"}
     }
 })
 
@@ -68,4 +69,4 @@ const promptChainingWorkflow = createWorkflow({
     .then(step3)
     .commit();
 
-export default promptChainingWorkflow;
+export {promptChainingWorkflow};
