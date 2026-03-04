@@ -63,7 +63,7 @@ const routingWorkflow = createWorkflow({
     }),
     outputSchema: z.object({
         query: z.string().describe('The users query '),
-        routingCategory: z.enum(['customer-support', 'general-question', 'refund-policy']).describe('The routing category for the query'),
+        routingCategory: z.enum(['customer-support', 'general-question']).describe('The routing category for the query'),
     }),
 }).then(llmCallRouter)
 .branch([
