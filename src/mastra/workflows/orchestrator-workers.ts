@@ -30,7 +30,7 @@ const orchestrator = createStep({
 
         return object;
       },
-    });
+});
 
 const fanOut = createStep({
     id:'fan-out',
@@ -91,11 +91,14 @@ const synthesizer = createStep({
     }),
     execute: async ({inputData, mastra})=>{
         const {sectionAnalyses} = inputData
-        console.log(sectionAnalyses)
-        let report = ''
-        //flatten and concatenate the analysis
 
-        return {report: report}
+        const report = sectionAnalyses
+            .map(({ section, content }) => `# ${section}\n\n${content}`)
+            .join('\n\n---\n\n')
+        
+            console.log(report)
+
+        return {report}
 
     }
 })
