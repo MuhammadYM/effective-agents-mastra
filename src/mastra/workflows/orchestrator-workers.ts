@@ -1,5 +1,8 @@
 import { createStep, createWorkflow  } from "@mastra/core/workflows";
 import { z } from "zod";
+import { openai } from "@ai-sdk/openai";
+import { generateObject } from "ai";
+
 
 
 const orchestrator = createStep({
@@ -11,17 +14,25 @@ const orchestrator = createStep({
         book: z.string(),
         reportSections: z.array(z.string())
     }),
-    execute: async ({input, mastra}) =>{
+    execute: async ({ input, mastra }) => {
+        const { book } = input;
 
-        const {book} = input
-
-        // necessary calls to break the book down into sections
-        onst reportSections = await agent.generate('message for agent')
-
-
-        return {book: book, sections: reportSections}
-    }
-})
+        console.log('book')
+    
+        const model = openai("gpt-4o-mini");
+    
+        const { object } = await generateObject({
+          model,
+          schema: z.object({
+            book: z.string(),
+            reportSections: z.array(z.string()),
+          }),
+          prompt: `Create simple and minimal sections for a report about the book "${book}".`,
+        });
+    
+        return object;
+      },
+    });
 
 const fanOut = createStep({
     id:'fan-out',
@@ -74,6 +85,7 @@ const synthesizer = createStep({
     }),
     execute: async ({input, mastra})=>{
         const {sectionAnalyses} = input
+        console.log(sectionAnalyses)
         let report = ''
         //flatten and concatenate the analysis
 
