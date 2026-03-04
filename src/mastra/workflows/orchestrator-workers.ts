@@ -1,5 +1,4 @@
 import { createStep, createWorkflow  } from "@mastra/core/workflows";
-import { workers } from "node:cluster";
 import { z } from "zod";
 
 
@@ -12,11 +11,12 @@ const orchestrator = createStep({
         book: z.string(),
         reportSections: z.array(z.string())
     }),
-    execute: async ({inputData}) =>{
+    execute: async ({input, mastra}) =>{
 
-        const {book} = inputData
+        const {book} = input
 
         // necessary calls to break the book down into sections
+        onst reportSections = await agent.generate('message for agent')
 
 
         return {book: book, sections: reportSections}
@@ -62,13 +62,18 @@ const fanOut = createStep({
 const synthesizer = createStep({
     id: 'synthesizer',
     inputSchema: z.object({
-        analysis: z.array(z.object()).describe('analysis of the book broken down by sections')
+        sectionAnalyses: z.array(
+            z.object({
+              section: z.string(),
+              content: z.string()
+            })
+          )
     }), 
     outputSchema: z.object({
         report: z.string().describe('book report created by putting all analysis sections together')
     }),
-    execute: async ({inputData})=>{
-        const {analysis} = inputData
+    execute: async ({input, mastra})=>{
+        const {sectionAnalyses} = input
         let report = ''
         //flatten and concatenate the analysis
 
