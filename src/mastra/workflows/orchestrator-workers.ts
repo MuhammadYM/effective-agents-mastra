@@ -14,10 +14,8 @@ const orchestrator = createStep({
         book: z.string(),
         reportSections: z.array(z.string())
     }),
-    execute: async ({ input, mastra }) => {
-        const { book } = input;
-
-        console.log('book')
+    execute: async ({ inputData, mastra }) => {
+        const { book } = inputData;
     
         const model = openai("gpt-4o-mini");
     
@@ -48,19 +46,27 @@ const fanOut = createStep({
             })
           )
     }).describe('analysis of the book in each sections'),
-    execute: async ({input, mastra}) =>{
-        const {book, reportSections} = input
+    execute: async ({inputData, mastra}) =>{
+        const {book, reportSections} = inputData
 
         const sectionAnalyses = await Promise.all(
             reportSections.map(async (section) => {
                 const agent = mastra?.getAgent('sectionWriter');
                 const result = await agent?.generate(
-                    `Write the ${section} section about the book called ${book}`
+                    `Write the content for the ${section} section about the book called ${book}`,
+                    // to show that these run concurrent
+                    {
+                        runId: `fan-out-${section.toLowerCase().replace(/\s+/g, '-')}`,
+                        tracingOptions: {
+                            metadata: { section, book },
+                            tags: ['fan-out'],
+                        },
+                    }
                 );
 
                 return {
                     section,
-                    content: result?.output ?? '',
+                    content: result?.text ?? '',
                 };
             }),
         );
@@ -83,8 +89,8 @@ const synthesizer = createStep({
     outputSchema: z.object({
         report: z.string().describe('book report created by putting all analysis sections together')
     }),
-    execute: async ({input, mastra})=>{
-        const {sectionAnalyses} = input
+    execute: async ({inputData, mastra})=>{
+        const {sectionAnalyses} = inputData
         console.log(sectionAnalyses)
         let report = ''
         //flatten and concatenate the analysis
