@@ -1,7 +1,7 @@
 import { createStep, createWorkflow  } from "@mastra/core/workflows";
 import { z } from "zod";
 import { openai } from "@ai-sdk/openai";
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 
 
 
@@ -14,20 +14,20 @@ const orchestrator = createStep({
         book: z.string(),
         reportSections: z.array(z.string())
     }),
-    execute: async ({ inputData, mastra }) => {
+    execute: async ({ inputData }) => {
         const { book } = inputData;
-    
-        const model = openai("gpt-4o-mini");
-    
-        const { object } = await generateObject({
-          model,
-          schema: z.object({
-            book: z.string(),
-            reportSections: z.array(z.string()),
-          }),
-          prompt: `Create simple and minimal sections for a report about the book "${book}".`,
+
+        const { output: object } = await generateText({
+            model: openai("gpt-4o-mini"),
+            output: Output.object({
+                schema: z.object({
+                    book: z.string(),
+                    reportSections: z.array(z.string()),
+                }),
+            }),
+            prompt: `Create simple and minimal sections for a report about the book "${book}".`,
         });
-    
+
         return object;
       },
     });
