@@ -70,5 +70,6 @@ const routingWorkflow = createWorkflow({
     [async ({ inputData: {  query, routingCategory } }) =>  routingCategory == "general-question", GeneralQuestion],
     [async ({ inputData: {  query, routingCategory } }) =>  routingCategory == "customer-support", CustomerSupport]
 ])
+.commit()
 
 export {routingWorkflow}
