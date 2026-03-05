@@ -1,5 +1,7 @@
 import { createStep, createWorkflow } from '@mastra/core/workflows';
 import { z } from 'zod';
+import { openai } from '@ai-sdk/openai';
+import { generateText, Output } from 'ai';
 
 const llmCallRouter = createStep({
     id: 'llm-call-router',
@@ -13,9 +15,17 @@ const llmCallRouter = createStep({
     execute: async ({inputData}) => {
         const {query} = inputData
 
-        //make necessary llm calls for routing the query
+        const { output } = await generateText({
+            model: openai('gpt-4o-mini'),
+            output: Output.object({
+                schema: z.object({
+                    routingCategory: z.enum(['customer-support', 'general-question']),
+                }),
+            }),
+            prompt: `Classify the following user query into one of these categories: "customer-support" (complaints, orders, billing, account issues) or "general-question" (general knowledge, how-to, information requests).\n\nQuery: ${query}`,
+        });
 
-        return {query: query, routingCategory: "customer-support" } as const
+        return { query, routingCategory: output.routingCategory }
     }
 })
 
