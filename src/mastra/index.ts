@@ -11,9 +11,10 @@ import {parallelizationWorkflow} from './workflows/parallelization';
 import { routingWorkflow } from './workflows/routing';
 import {orchestratorWorkers} from './workflows/orchestrator-workers'
 import { sectionWriter } from './agents/section-writer-agent';
+import { recipeGeneratorWorkflow } from './workflows/evaluator-optimizer';
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, promptChainingWorkflow, parallelizationWorkflow, routingWorkflow, orchestratorWorkers },
+  workflows: { weatherWorkflow, promptChainingWorkflow, parallelizationWorkflow, routingWorkflow, orchestratorWorkers, recipeGeneratorWorkflow },
   agents: { weatherAgent, sectionWriter },
   scorers: { toolCallAppropriatenessScorer, completenessScorer, translationScorer },
   storage: new LibSQLStore({
