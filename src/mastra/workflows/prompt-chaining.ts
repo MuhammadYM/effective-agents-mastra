@@ -1,5 +1,7 @@
-import {createStep, createWorkflow} from '@mastra/core/workflows'; 
+import {createStep, createWorkflow} from '@mastra/core/workflows';
 import { z } from 'zod';
+import { openai } from '@ai-sdk/openai';
+import { generateText } from 'ai';
 
 
 // Step 1: generate short description of the topic
@@ -14,10 +16,12 @@ const step1 = createStep({
     execute: async ({inputData}) => {
         const {topic} = inputData
 
-        //make necessary llm calls for generating the description
+        const { text } = await generateText({
+            model: openai('gpt-4o-mini'),
+            prompt: `Write a short, clear description of the following topic: ${topic}`,
+        });
 
-
-        return {description: "null"}
+        return { description: text }
     }
 })
 
@@ -32,9 +36,12 @@ const step2 = createStep({
     execute: async ({inputData}) => {
         const {description} = inputData
 
-        //make necessary llm calls for updating the description
+        const { text } = await generateText({
+            model: openai('gpt-4o-mini'),
+            prompt: `Improve and expand the following description to make it more engaging and informative:\n\n${description}`,
+        });
 
-        return {updatedDescription: "null"}
+        return { updatedDescription: text }
     }
 })
 
@@ -49,9 +56,12 @@ const step3 = createStep({
     execute: async ({inputData}) => {
         const {updatedDescription} = inputData
 
-        //make necessary llm calls for generating the X thread
+        const { text } = await generateText({
+            model: openai('gpt-4o-mini'),
+            prompt: `Convert the following description into an engaging X (Twitter) thread. Format each tweet numbered (1/, 2/, etc.):\n\n${updatedDescription}`,
+        });
 
-        return {xThread: "null"}
+        return { xThread: text }
     }
 })
 

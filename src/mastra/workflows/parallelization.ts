@@ -1,5 +1,7 @@
 import { createStep, createWorkflow } from '@mastra/core/workflows';
 import { z } from 'zod';
+import { openai } from '@ai-sdk/openai';
+import { generateText } from 'ai';
 
 
 const step1 = createStep({
@@ -13,9 +15,12 @@ const step1 = createStep({
    execute: async ({inputData}) => {
     const {topic} = inputData
 
-    //make necessary llm calls for generating the linkedIn post
+    const { text } = await generateText({
+        model: openai('gpt-4o-mini'),
+        prompt: `Write a professional LinkedIn post about the following topic: ${topic}`,
+    });
 
-    return {linkedInPost: "null"}
+    return { linkedInPost: text }
    }
 })
 
@@ -30,9 +35,12 @@ const step2 = createStep({
     execute: async ({inputData}) => {
         const {topic} = inputData
 
-        //make necessary llm calls for generating the twitter post
+        const { text } = await generateText({
+            model: openai('gpt-4o-mini'),
+            prompt: `Write a concise and engaging Twitter post (max 280 characters) about the following topic: ${topic}`,
+        });
 
-        return {twitterPost: "null"}
+        return { twitterPost: text }
     }
 })
 
