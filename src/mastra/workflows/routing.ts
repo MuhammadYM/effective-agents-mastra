@@ -41,9 +41,12 @@ const CustomerSupport = createStep({
     execute: async ({inputData}) => {
         const {query} = inputData
 
-        //make necessary llm calls for generating the answer
+        const { text } = await generateText({
+            model: openai('gpt-4o-mini'),
+            prompt: `You are a customer support agent. Answer the following customer query helpfully and professionally.\n\nQuery: ${query}`,
+        });
 
-        return {answer: "null"}
+        return {answer: text}
     }
 })
 
@@ -59,9 +62,12 @@ const GeneralQuestion = createStep({
     execute: async ({inputData}) => {
         const {query} = inputData
 
-        //make necessary llm calls for generating the answer
+        const { text } = await generateText({
+            model: openai('gpt-4o-mini'),
+            prompt: `Answer the following question clearly and concisely.\n\nQuestion: ${query}`,
+        });
 
-        return {answer: "null"}
+        return {answer: text}
     }
 })
 
